@@ -3,6 +3,7 @@ package com.liferay.docs.guestbook.portlet.portlet;
 import com.liferay.docs.guestbook.model.Guestbook;
 import com.liferay.docs.guestbook.constants.GuestbookPortletKeys;
 import com.liferay.docs.guestbook.service.GuestbookLocalService;
+import com.liferay.docs.guestbook.service.GuestbookService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -48,7 +49,7 @@ public class GuestbookAdminPortlet extends MVCPortlet {
 		String name = ParamUtil.getString(request, "name");
 
 		try {
-			_guestbookLocalService.addGuestbook(serviceContext.getUserId(), name, serviceContext);
+			_guestbookService.addGuestbook(serviceContext.getUserId(), name, serviceContext);
 
 			SessionMessages.add(request, "guestbookAdded");
 
@@ -72,7 +73,7 @@ public class GuestbookAdminPortlet extends MVCPortlet {
 		long guestbookId = ParamUtil.getLong(request, "guestbookId");
 
 		try {
-			_guestbookLocalService.updateGuestbook(
+			_guestbookService.updateGuestbook(
 					serviceContext.getUserId(), guestbookId, name, serviceContext);
 
 			SessionMessages.add(request, "guestbookUpdated");
@@ -98,7 +99,7 @@ public class GuestbookAdminPortlet extends MVCPortlet {
 		long guestbookId = ParamUtil.getLong(request, "guestbookId");
 
 		try {
-			_guestbookLocalService.deleteGuestbook(guestbookId, serviceContext);
+			_guestbookService.deleteGuestbook(guestbookId, serviceContext);
 
 			SessionMessages.add(request, "guestbookDeleted");
 		}
@@ -111,10 +112,10 @@ public class GuestbookAdminPortlet extends MVCPortlet {
 		}
 	}
 
-	private GuestbookLocalService _guestbookLocalService;
+	private GuestbookService _guestbookService;
 
 	@Reference(unbind = "-")
-	protected void setGuestbookService(GuestbookLocalService guestbookLocalService) {
-		_guestbookLocalService = guestbookLocalService;
+	protected void setGuestbookService(GuestbookService guestbookService) {
+		_guestbookService = guestbookService;
 	}
 }

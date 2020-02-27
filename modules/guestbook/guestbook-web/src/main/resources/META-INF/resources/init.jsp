@@ -42,6 +42,7 @@
 <%@ page import="com.liferay.portal.kernel.util.GetterUtil" %>
 <%@ page import="com.liferay.portal.kernel.util.Validator" %>
 <%@ page import="com.liferay.portal.kernel.util.PortalUtil" %>
+<%@ page import="com.liferay.portal.kernel.workflow.WorkflowConstants"%>
 
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>

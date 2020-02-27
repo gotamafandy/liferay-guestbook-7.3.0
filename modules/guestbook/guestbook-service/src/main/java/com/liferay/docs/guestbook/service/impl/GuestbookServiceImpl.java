@@ -14,10 +14,19 @@
 
 package com.liferay.docs.guestbook.service.impl;
 
+import com.liferay.docs.guestbook.model.Guestbook;
 import com.liferay.docs.guestbook.service.base.GuestbookServiceBaseImpl;
+import com.liferay.docs.guestbook.service.permission.GuestbookModelPermission;
+import com.liferay.docs.guestbook.service.permission.GuestbookPermission;
+import com.liferay.docs.guestbook.util.ActionKeys;
 import com.liferay.portal.aop.AopService;
-
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import org.osgi.service.component.annotations.Component;
+
+import java.util.List;
 
 /**
  * The implementation of the guestbook remote service.
@@ -33,17 +42,57 @@ import org.osgi.service.component.annotations.Component;
  * @see GuestbookServiceBaseImpl
  */
 @Component(
-	property = {
-		"json.web.service.context.name=gb",
-		"json.web.service.context.path=Guestbook"
-	},
-	service = AopService.class
+		property = {
+				"json.web.service.context.name=gb",
+				"json.web.service.context.path=Guestbook"
+		},
+		service = AopService.class
 )
 public class GuestbookServiceImpl extends GuestbookServiceBaseImpl {
 
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use <code>com.liferay.docs.guestbook.service.GuestbookServiceUtil</code> to access the guestbook remote service.
-	 */
+	public Guestbook addGuestbook(long userId, String name,
+								  ServiceContext serviceContext) throws SystemException,
+			PortalException {
+
+		GuestbookModelPermission.check(getPermissionChecker(),
+				serviceContext.getScopeGroupId(), ActionKeys.ADD_GUESTBOOK);
+
+		return guestbookLocalService.addGuestbook(userId, name, serviceContext);
+	}
+
+	public Guestbook deleteGuestbook(long guestbookId,
+									 ServiceContext serviceContext) throws PortalException,
+			SystemException {
+
+		GuestbookPermission.check(getPermissionChecker(), guestbookId,
+				ActionKeys.DELETE);
+
+		return guestbookLocalService.deleteGuestbook(guestbookId, serviceContext);
+	}
+
+	public List<Guestbook> getGuestbooks(long groupId) throws SystemException {
+		return guestbookPersistence.filterFindByGroupId(groupId);
+	}
+
+	public List<Guestbook> getGuestbooks(long groupId, int start, int end)
+			throws SystemException {
+		return guestbookPersistence.filterFindByGroupId(groupId, start, end);
+	}
+
+	public int getGuestbooksCount(long groupId) throws SystemException {
+		return guestbookPersistence.filterCountByGroupId(groupId);
+	}
+
+	public Guestbook updateGuestbook(long userId, long guestbookId,
+									 String name, ServiceContext serviceContext) throws PortalException,
+			SystemException {
+
+		GuestbookPermission.check(getPermissionChecker(), guestbookId,
+				ActionKeys.UPDATE);
+
+		return guestbookLocalService.updateGuestbook(userId, guestbookId, name,
+				serviceContext);
+	}
+
+
 }

@@ -39,6 +39,43 @@ public class GuestbookServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.docs.guestbook.service.impl.GuestbookServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static com.liferay.docs.guestbook.model.Guestbook addGuestbook(
+			long userId, String name,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			   com.liferay.portal.kernel.exception.SystemException {
+
+		return getService().addGuestbook(userId, name, serviceContext);
+	}
+
+	public static com.liferay.docs.guestbook.model.Guestbook deleteGuestbook(
+			long guestbookId,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			   com.liferay.portal.kernel.exception.SystemException {
+
+		return getService().deleteGuestbook(guestbookId, serviceContext);
+	}
+
+	public static java.util.List<com.liferay.docs.guestbook.model.Guestbook>
+			getGuestbooks(long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+
+		return getService().getGuestbooks(groupId);
+	}
+
+	public static java.util.List<com.liferay.docs.guestbook.model.Guestbook>
+			getGuestbooks(long groupId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+
+		return getService().getGuestbooks(groupId, start, end);
+	}
+
+	public static int getGuestbooksCount(long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+
+		return getService().getGuestbooksCount(groupId);
+	}
 
 	/**
 	 * Returns the OSGi service identifier.
@@ -47,6 +84,16 @@ public class GuestbookServiceUtil {
 	 */
 	public static String getOSGiServiceIdentifier() {
 		return getService().getOSGiServiceIdentifier();
+	}
+
+	public static com.liferay.docs.guestbook.model.Guestbook updateGuestbook(
+			long userId, long guestbookId, String name,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			   com.liferay.portal.kernel.exception.SystemException {
+
+		return getService().updateGuestbook(
+			userId, guestbookId, name, serviceContext);
 	}
 
 	public static GuestbookService getService() {
