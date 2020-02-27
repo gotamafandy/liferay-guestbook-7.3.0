@@ -2,7 +2,7 @@ package com.liferay.docs.guestbook.portlet.portlet;
 
 import com.liferay.docs.guestbook.model.Entry;
 import com.liferay.docs.guestbook.model.Guestbook;
-import com.liferay.docs.guestbook.portlet.constants.GuestbookPortletKeys;
+import com.liferay.docs.guestbook.constants.GuestbookPortletKeys;
 import com.liferay.docs.guestbook.service.EntryLocalService;
 import com.liferay.docs.guestbook.service.GuestbookLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -13,42 +13,35 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
+import javax.portlet.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.Portlet;
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
  * @author fandygotama
  */
 @Component(
-		immediate = true, 
-		property = { 
+		immediate = true,
+		property = {
 				"com.liferay.portlet.display-category=category.social",
-				"com.liferay.portlet.instanceable=false", 
+				"com.liferay.portlet.instanceable=false",
 				"com.liferay.portlet.scopeable=true",
 				"javax.portlet.name=" + GuestbookPortletKeys.GUESTBOOK,
-				"javax.portlet.display-name=Guestbook", 
+				"javax.portlet.display-name=Guestbook",
 				"javax.portlet.expiration-cache=0",
 				"javax.portlet.init-param.template-path=/",
 				"javax.portlet.init-param.view-template=/guestbookwebportlet/view.jsp",
-				"javax.portlet.resource-bundle=content.Language", 
+				"javax.portlet.resource-bundle=content.Language",
 				"javax.portlet.security-role-ref=power-user,user",
-				"javax.portlet.supports.mime-type=text/html" 
-		}, 
+				"javax.portlet.supports.mime-type=text/html"
+		},
 		service = Portlet.class
-		)
+)
 public class GuestbookPortlet extends MVCPortlet {
 
 	public void addEntry(ActionRequest request, ActionResponse response) {
@@ -73,7 +66,8 @@ public class GuestbookPortlet extends MVCPortlet {
 					response.setRenderParameter("guestbookId", Long.toString(guestbookId));
 
 				} catch (Exception e) {
-					System.out.println(e);
+
+					Logger.getLogger(GuestbookPortlet.class.getName()).log(Level.SEVERE, null, e);
 
 					SessionErrors.add(request, e.getClass().getName());
 
@@ -101,60 +95,64 @@ public class GuestbookPortlet extends MVCPortlet {
 				}
 			}
 		} catch (PortalException ex) {
-			
+
 		}
 	}
 
 	public void deleteEntry(ActionRequest request, ActionResponse response) throws PortalException {
-        long entryId = ParamUtil.getLong(request, "entryId");
-        long guestbookId = ParamUtil.getLong(request, "guestbookId");
+		long entryId = ParamUtil.getLong(request, "entryId");
+		long guestbookId = ParamUtil.getLong(request, "guestbookId");
 
-        ServiceContext serviceContext = ServiceContextFactory.getInstance(
-            Entry.class.getName(), request);
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				Entry.class.getName(), request);
 
-        try {
+		try {
 
-            response.setRenderParameter("guestbookId", Long.toString(guestbookId));
+			response.setRenderParameter("guestbookId", Long.toString(guestbookId));
 
-            _entryLocalService.deleteEntry(entryId, serviceContext);
-        }catch (Exception e) {
-            Logger.getLogger(GuestbookPortlet.class.getName()).log(Level.SEVERE, null, e);
-        }
+			_entryLocalService.deleteEntry(entryId, serviceContext);
+
+			SessionMessages.add(request, "entryDeleted");
+		}catch (Exception e) {
+			Logger.getLogger(GuestbookPortlet.class.getName()).log(Level.SEVERE, null, e);
+
+			SessionErrors.add(request, e.getClass().getName());
+		}
 	}
-	
+
 	@Override
 	public void render(RenderRequest renderRequest, RenderResponse renderResponse)
 			throws IOException, PortletException {
 
 		try {
-            ServiceContext serviceContext = ServiceContextFactory.getInstance(
-                Guestbook.class.getName(), renderRequest);
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+					Guestbook.class.getName(), renderRequest);
 
-            long groupId = serviceContext.getScopeGroupId();
+			long groupId = serviceContext.getScopeGroupId();
 
-            long guestbookId = ParamUtil.getLong(renderRequest, "guestbookId");
+			long guestbookId = ParamUtil.getLong(renderRequest, "guestbookId");
 
-            List<Guestbook> guestbooks = _guestbookLocalService.getGuestbooks(
-                groupId);
+			List<Guestbook> guestbooks = _guestbookLocalService.getGuestbooks(
+					groupId);
 
-            if (guestbooks.isEmpty()) {
-                Guestbook guestbook = _guestbookLocalService.addGuestbook(
-                    serviceContext.getUserId(), "Main", serviceContext);
+			if (guestbooks.isEmpty()) {
+				Guestbook guestbook = _guestbookLocalService.addGuestbook(
+						serviceContext.getUserId(), "Main", serviceContext);
 
-                guestbookId = guestbook.getGuestbookId();
-            }
+				guestbookId = guestbook.getGuestbookId();
+			}
 
-            if (guestbookId == 0) {
-                guestbookId = guestbooks.get(0).getGuestbookId();
-            }
+			if (guestbookId == 0) {
+				guestbookId = guestbooks.get(0).getGuestbookId();
+			}
 
-            renderRequest.setAttribute("guestbookId", guestbookId);
-        }
-        catch (Exception e) {
-            throw new PortletException(e);
-        }
+			renderRequest.setAttribute("guestbookId", guestbookId);
+		}
+		catch (Exception e) {
+			throw new PortletException(e);
+		}
 
-        super.render(renderRequest, renderResponse);
+		super.render(renderRequest, renderResponse);
 	}
 
 	@Reference(unbind = "-")

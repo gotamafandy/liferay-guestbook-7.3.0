@@ -27,6 +27,31 @@
              <aui:input name="name" />
         </aui:fieldset>
 
+        <liferay-asset:asset-categories-error />
+        <liferay-asset:asset-tags-error />
+
+        <liferay-ui:panel defaultState="closed" extended="<%= false %>"
+          id="guestbookCategorizationPanel" persistState="<%= true %>"
+          title="categorization">
+
+            <aui:fieldset>
+              <aui:input name="categories" type="assetCategories" />
+
+              <aui:input name="tags" type="assetTags" />
+            </aui:fieldset>
+
+        </liferay-ui:panel>
+
+        <liferay-ui:panel defaultState="closed" extended="<%= false %>"
+          id="guestbookAssetLinksPanel" persistState="<%= true %>"
+          title="related-assets">
+          <aui:fieldset>
+            <liferay-asset:input-asset-links
+              className="<%= Guestbook.class.getName() %>"
+              classPK="<%= guestbookId %>" />
+          </aui:fieldset>
+        </liferay-ui:panel>
+
         <aui:button-row>
              <aui:button type="submit" />
              <aui:button onClick="<%= viewURL %>" type="cancel"  />
