@@ -25,10 +25,12 @@ import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
@@ -175,7 +177,7 @@ public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
 	@Indexable(type = IndexableType.DELETE)
 	public Entry deleteEntry(long entryId, ServiceContext serviceContext) throws PortalException {
 
-		final Entry entry = deleteEntry(entryId);
+		final Entry entry = entryLocalService.deleteEntry(entryId);
 
 		resourceLocalService.deleteResource(
 				serviceContext.getCompanyId(), 
@@ -195,6 +197,23 @@ public class EntryLocalServiceImpl extends EntryLocalServiceBaseImpl {
 				Entry.class.getName(), entry.getEntryId());
 
 		return entry;
+	}
+
+	@Indexable(type = IndexableType.DELETE)
+	@Override
+	public Entry deleteEntry(long entryId)
+			throws PortalException {
+
+		Entry entry = entryPersistence.findByPrimaryKey(entryId);
+
+		return entryLocalService.deleteEntry(entry);
+	}
+
+	@Indexable(type = IndexableType.DELETE)
+	@Override
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
+	public Entry deleteEntry(Entry entry) {
+		return entryPersistence.remove(entry);
 	}
 
 	public Entry updateStatus(long userId, long guestbookId, long entryId, int status,

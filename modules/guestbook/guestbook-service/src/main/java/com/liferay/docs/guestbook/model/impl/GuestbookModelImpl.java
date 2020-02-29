@@ -82,9 +82,9 @@ public class GuestbookModelImpl
 		{"groupId", Types.BIGINT}, {"companyId", Types.BIGINT},
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
-		{"status", Types.INTEGER}, {"statusByUserId", Types.BIGINT},
-		{"statusByUserName", Types.VARCHAR}, {"statusDate", Types.TIMESTAMP},
-		{"name", Types.VARCHAR}
+		{"lastPublishDate", Types.TIMESTAMP}, {"status", Types.INTEGER},
+		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
+		{"statusDate", Types.TIMESTAMP}, {"name", Types.VARCHAR}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -99,6 +99,7 @@ public class GuestbookModelImpl
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("lastPublishDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("statusByUserId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("statusByUserName", Types.VARCHAR);
@@ -107,7 +108,7 @@ public class GuestbookModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table GB_Guestbook (uuid_ VARCHAR(75) null,guestbookId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,name VARCHAR(75) null)";
+		"create table GB_Guestbook (uuid_ VARCHAR(75) null,guestbookId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,name VARCHAR(75) null)";
 
 	public static final String TABLE_SQL_DROP = "drop table GB_Guestbook";
 
@@ -162,6 +163,7 @@ public class GuestbookModelImpl
 		model.setUserName(soapModel.getUserName());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setLastPublishDate(soapModel.getLastPublishDate());
 		model.setStatus(soapModel.getStatus());
 		model.setStatusByUserId(soapModel.getStatusByUserId());
 		model.setStatusByUserName(soapModel.getStatusByUserName());
@@ -343,6 +345,11 @@ public class GuestbookModelImpl
 		attributeSetterBiConsumers.put(
 			"modifiedDate",
 			(BiConsumer<Guestbook, Date>)Guestbook::setModifiedDate);
+		attributeGetterFunctions.put(
+			"lastPublishDate", Guestbook::getLastPublishDate);
+		attributeSetterBiConsumers.put(
+			"lastPublishDate",
+			(BiConsumer<Guestbook, Date>)Guestbook::setLastPublishDate);
 		attributeGetterFunctions.put("status", Guestbook::getStatus);
 		attributeSetterBiConsumers.put(
 			"status", (BiConsumer<Guestbook, Integer>)Guestbook::setStatus);
@@ -522,6 +529,17 @@ public class GuestbookModelImpl
 		_setModifiedDate = true;
 
 		_modifiedDate = modifiedDate;
+	}
+
+	@JSON
+	@Override
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
 	}
 
 	@JSON
@@ -747,6 +765,7 @@ public class GuestbookModelImpl
 		guestbookImpl.setUserName(getUserName());
 		guestbookImpl.setCreateDate(getCreateDate());
 		guestbookImpl.setModifiedDate(getModifiedDate());
+		guestbookImpl.setLastPublishDate(getLastPublishDate());
 		guestbookImpl.setStatus(getStatus());
 		guestbookImpl.setStatusByUserId(getStatusByUserId());
 		guestbookImpl.setStatusByUserName(getStatusByUserName());
@@ -879,6 +898,15 @@ public class GuestbookModelImpl
 			guestbookCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
+		Date lastPublishDate = getLastPublishDate();
+
+		if (lastPublishDate != null) {
+			guestbookCacheModel.lastPublishDate = lastPublishDate.getTime();
+		}
+		else {
+			guestbookCacheModel.lastPublishDate = Long.MIN_VALUE;
+		}
+
 		guestbookCacheModel.status = getStatus();
 
 		guestbookCacheModel.statusByUserId = getStatusByUserId();
@@ -998,6 +1026,7 @@ public class GuestbookModelImpl
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
+	private Date _lastPublishDate;
 	private int _status;
 	private int _originalStatus;
 	private boolean _setOriginalStatus;

@@ -16,9 +16,8 @@ package com.liferay.docs.guestbook.model;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.model.BaseModel;
-import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.ShardedModel;
-import com.liferay.portal.kernel.model.StagedAuditedModel;
+import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.model.WorkflowedModel;
 
 import java.util.Date;
@@ -38,7 +37,7 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface EntryModel
-	extends BaseModel<Entry>, GroupedModel, ShardedModel, StagedAuditedModel,
+	extends BaseModel<Entry>, ShardedModel, StagedGroupedModel,
 			WorkflowedModel {
 
 	/*
@@ -204,6 +203,22 @@ public interface EntryModel
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate);
+
+	/**
+	 * Returns the last publish date of this entry.
+	 *
+	 * @return the last publish date of this entry
+	 */
+	@Override
+	public Date getLastPublishDate();
+
+	/**
+	 * Sets the last publish date of this entry.
+	 *
+	 * @param lastPublishDate the last publish date of this entry
+	 */
+	@Override
+	public void setLastPublishDate(Date lastPublishDate);
 
 	/**
 	 * Returns the status of this entry.

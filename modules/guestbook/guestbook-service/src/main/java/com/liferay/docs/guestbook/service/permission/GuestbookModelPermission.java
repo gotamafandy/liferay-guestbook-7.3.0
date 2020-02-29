@@ -1,5 +1,9 @@
 package com.liferay.docs.guestbook.service.permission;
 
+import com.liferay.docs.guestbook.constants.GuestbookPortletKeys;
+import com.liferay.exportimport.kernel.staging.permission.StagingPermissionUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import org.osgi.service.component.annotations.Component;
 
 import com.liferay.portal.kernel.exception.PortalException;
@@ -27,10 +31,39 @@ public class GuestbookModelPermission extends BaseResourcePermissionChecker {
     }
 
     public static boolean contains(
-        PermissionChecker permissionChecker, long groupId, String actionId) {
+            PermissionChecker permissionChecker, long groupId, String actionId) {
+
+        return contains(
+                permissionChecker, RESOURCE_NAME, GuestbookPortletKeys.GUESTBOOK,
+                groupId, actionId);
+    }
+
+    public static boolean contains(
+            PermissionChecker permissionChecker, String name, long classPK,
+            String actionId) {
+
+        Group group = GroupLocalServiceUtil.fetchGroup(classPK);
+
+        if ((group != null) && group.isStagingGroup()) {
+            classPK = group.getLiveGroupId();
+        }
 
         return permissionChecker.hasPermission(
-            groupId, RESOURCE_NAME, groupId, actionId);
+                classPK, name, classPK, actionId);
+    }
+
+    public static boolean contains(
+            PermissionChecker permissionChecker, String name, String portletId,
+            long classPK, String actionId) {
+
+        Boolean hasPermission = StagingPermissionUtil.hasPermission(
+                permissionChecker, classPK, name, classPK, portletId, actionId);
+
+        if (hasPermission != null) {
+            return hasPermission.booleanValue();
+        }
+
+        return contains(permissionChecker, name, classPK, actionId);
     }
 
     @Override

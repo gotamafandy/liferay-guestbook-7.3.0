@@ -53,6 +53,7 @@ public class EntryWrapper
 		attributes.put("userName", getUserName());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("lastPublishDate", getLastPublishDate());
 		attributes.put("status", getStatus());
 		attributes.put("statusByUserId", getStatusByUserId());
 		attributes.put("statusByUserName", getStatusByUserName());
@@ -113,6 +114,12 @@ public class EntryWrapper
 
 		if (modifiedDate != null) {
 			setModifiedDate(modifiedDate);
+		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
 		}
 
 		Integer status = (Integer)attributes.get("status");
@@ -222,6 +229,16 @@ public class EntryWrapper
 	@Override
 	public long getGuestbookId() {
 		return model.getGuestbookId();
+	}
+
+	/**
+	 * Returns the last publish date of this entry.
+	 *
+	 * @return the last publish date of this entry
+	 */
+	@Override
+	public Date getLastPublishDate() {
+		return model.getLastPublishDate();
 	}
 
 	/**
@@ -497,6 +514,16 @@ public class EntryWrapper
 	@Override
 	public void setGuestbookId(long guestbookId) {
 		model.setGuestbookId(guestbookId);
+	}
+
+	/**
+	 * Sets the last publish date of this entry.
+	 *
+	 * @param lastPublishDate the last publish date of this entry
+	 */
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		model.setLastPublishDate(lastPublishDate);
 	}
 
 	/**

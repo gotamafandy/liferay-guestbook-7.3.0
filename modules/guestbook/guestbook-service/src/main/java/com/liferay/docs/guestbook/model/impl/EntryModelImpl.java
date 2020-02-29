@@ -81,10 +81,11 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		{"groupId", Types.BIGINT}, {"companyId", Types.BIGINT},
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
-		{"status", Types.INTEGER}, {"statusByUserId", Types.BIGINT},
-		{"statusByUserName", Types.VARCHAR}, {"statusDate", Types.TIMESTAMP},
-		{"name", Types.VARCHAR}, {"email", Types.VARCHAR},
-		{"message", Types.VARCHAR}, {"guestbookId", Types.BIGINT}
+		{"lastPublishDate", Types.TIMESTAMP}, {"status", Types.INTEGER},
+		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
+		{"statusDate", Types.TIMESTAMP}, {"name", Types.VARCHAR},
+		{"email", Types.VARCHAR}, {"message", Types.VARCHAR},
+		{"guestbookId", Types.BIGINT}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -99,6 +100,7 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("lastPublishDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("statusByUserId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("statusByUserName", Types.VARCHAR);
@@ -110,7 +112,7 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table GB_Entry (uuid_ VARCHAR(75) null,entryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,name VARCHAR(75) null,email VARCHAR(75) null,message VARCHAR(75) null,guestbookId LONG)";
+		"create table GB_Entry (uuid_ VARCHAR(75) null,entryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,name VARCHAR(75) null,email VARCHAR(75) null,message VARCHAR(75) null,guestbookId LONG)";
 
 	public static final String TABLE_SQL_DROP = "drop table GB_Entry";
 
@@ -165,6 +167,7 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		model.setUserName(soapModel.getUserName());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setLastPublishDate(soapModel.getLastPublishDate());
 		model.setStatus(soapModel.getStatus());
 		model.setStatusByUserId(soapModel.getStatusByUserId());
 		model.setStatusByUserName(soapModel.getStatusByUserName());
@@ -340,6 +343,11 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		attributeGetterFunctions.put("modifiedDate", Entry::getModifiedDate);
 		attributeSetterBiConsumers.put(
 			"modifiedDate", (BiConsumer<Entry, Date>)Entry::setModifiedDate);
+		attributeGetterFunctions.put(
+			"lastPublishDate", Entry::getLastPublishDate);
+		attributeSetterBiConsumers.put(
+			"lastPublishDate",
+			(BiConsumer<Entry, Date>)Entry::setLastPublishDate);
 		attributeGetterFunctions.put("status", Entry::getStatus);
 		attributeSetterBiConsumers.put(
 			"status", (BiConsumer<Entry, Integer>)Entry::setStatus);
@@ -527,6 +535,17 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		_setModifiedDate = true;
 
 		_modifiedDate = modifiedDate;
+	}
+
+	@JSON
+	@Override
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
 	}
 
 	@JSON
@@ -807,6 +826,7 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 		entryImpl.setUserName(getUserName());
 		entryImpl.setCreateDate(getCreateDate());
 		entryImpl.setModifiedDate(getModifiedDate());
+		entryImpl.setLastPublishDate(getLastPublishDate());
 		entryImpl.setStatus(getStatus());
 		entryImpl.setStatusByUserId(getStatusByUserId());
 		entryImpl.setStatusByUserName(getStatusByUserName());
@@ -946,6 +966,15 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 			entryCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
+		Date lastPublishDate = getLastPublishDate();
+
+		if (lastPublishDate != null) {
+			entryCacheModel.lastPublishDate = lastPublishDate.getTime();
+		}
+		else {
+			entryCacheModel.lastPublishDate = Long.MIN_VALUE;
+		}
+
 		entryCacheModel.status = getStatus();
 
 		entryCacheModel.statusByUserId = getStatusByUserId();
@@ -1081,6 +1110,7 @@ public class EntryModelImpl extends BaseModelImpl<Entry> implements EntryModel {
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
+	private Date _lastPublishDate;
 	private int _status;
 	private int _originalStatus;
 	private boolean _setOriginalStatus;

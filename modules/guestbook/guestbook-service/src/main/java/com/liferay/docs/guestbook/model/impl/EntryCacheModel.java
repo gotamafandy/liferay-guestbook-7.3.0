@@ -63,7 +63,7 @@ public class EntryCacheModel implements CacheModel<Entry>, Externalizable {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(33);
+		StringBundler sb = new StringBundler(35);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -81,6 +81,8 @@ public class EntryCacheModel implements CacheModel<Entry>, Externalizable {
 		sb.append(createDate);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
+		sb.append(", lastPublishDate=");
+		sb.append(lastPublishDate);
 		sb.append(", status=");
 		sb.append(status);
 		sb.append(", statusByUserId=");
@@ -137,6 +139,13 @@ public class EntryCacheModel implements CacheModel<Entry>, Externalizable {
 		}
 		else {
 			entryImpl.setModifiedDate(new Date(modifiedDate));
+		}
+
+		if (lastPublishDate == Long.MIN_VALUE) {
+			entryImpl.setLastPublishDate(null);
+		}
+		else {
+			entryImpl.setLastPublishDate(new Date(lastPublishDate));
 		}
 
 		entryImpl.setStatus(status);
@@ -198,6 +207,7 @@ public class EntryCacheModel implements CacheModel<Entry>, Externalizable {
 		userName = objectInput.readUTF();
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
+		lastPublishDate = objectInput.readLong();
 
 		status = objectInput.readInt();
 
@@ -237,6 +247,7 @@ public class EntryCacheModel implements CacheModel<Entry>, Externalizable {
 
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
+		objectOutput.writeLong(lastPublishDate);
 
 		objectOutput.writeInt(status);
 
@@ -283,6 +294,7 @@ public class EntryCacheModel implements CacheModel<Entry>, Externalizable {
 	public String userName;
 	public long createDate;
 	public long modifiedDate;
+	public long lastPublishDate;
 	public int status;
 	public long statusByUserId;
 	public String statusByUserName;
